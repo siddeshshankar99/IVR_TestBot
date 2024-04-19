@@ -1,0 +1,27 @@
+version: '3'
+services:
+  sim:
+    image: scout_mini  # Ensure this image is built for ARM64
+    build: ./
+    volumes:
+      - ./src:/mini/ws/src  # This path should correctly point to your ROS workspace's source code
+      - ./.cache/melodic/devel:/mini/ws/devel  
+      - ./.cache/melodic/build:/mini/ws/build  
+      - ./.cache/melodic/log:/mini/ws/log  
+    environment:
+      - DISPLAY=novnc:0
+    networks:
+      - x11
+    stdin_open: true
+    tty: true
+  novnc:
+    image: theasp/novnc:latest  # Ensure this image supports ARM64, or find an alternative
+    environment:
+      - DISPLAY_WIDTH=1728
+      - DISPLAY_HEIGHT=972
+    ports:
+      - "8000:8080"
+    networks:
+      - x11
+networks:
+  x11:

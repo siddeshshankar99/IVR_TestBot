@@ -1,0 +1,46 @@
+<!-- This is a ROS Launch file designed to set up environment for a robot with transformations and visualization -->
+
+<launch>
+  <!-- Set the robot description parameter using a URDF file -->
+  <param name="robot_description"
+         command="$(find xacro)/xacro $(find scout_description)/urdf/scout_mini.urdf.xacro" />
+
+  <!-- Launch Joint State Publisher GUI -->
+  <node name="joint_state_publisher_gui"
+        pkg="joint_state_publisher_gui"
+        type="joint_state_publisher_gui" />
+
+  <!-- Launch Robot State Publisher -->
+  <node name="robot_state_publisher"
+        pkg="robot_state_publisher"
+        type="robot_state_publisher" />
+
+  <!-- Launch Map Server -->
+  <node name="map_server"
+        pkg="map_server"
+        type="map_server"
+        args="$(find scout_description)/maps/CoboDeck.yaml"
+        output="screen">
+    <param name="frame_id" value="map" />
+    <param name="topic" value="map" />
+    <param name="use_sim_time" value="true" />
+  </node>
+
+  <!-- Publish static transform from Odometry to Base Link -->
+  <node pkg="tf"
+        type="static_transform_publisher"
+        name="tf_base_link_to_odom"
+        args="0 0 0 0 0 0 odom base_link 100" />
+
+  <!-- Publish static transform from Map to Odometry -->
+  <node pkg="tf"
+        type="static_transform_publisher"
+        name="tf_map_to_odom"
+        args="0 0 0.5 -1.57 0 0 map odom 100" />
+
+  <!-- Launch RViz for visualization -->
+  <node name="rviz"
+        pkg="rviz"
+        type="rviz"
+        args="-d $(find scout_description)/rviz/scout_mini_model_display.rviz" />
+</launch>

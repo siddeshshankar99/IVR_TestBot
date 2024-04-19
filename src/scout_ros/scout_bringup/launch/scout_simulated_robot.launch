@@ -1,0 +1,25 @@
+<launch>
+    <!-- Existing launch configuration for your robot -->
+    <arg name="simulated_robot" value="true" />
+    <arg name="model_xacro" default="$(find scout_description)/urdf/scout_mini.urdf.xacro" />
+    <arg name="odom_topic_name" default="odom" />
+    <arg name="is_scout_omni" default="true" />
+    <arg name="pub_tf" default="true" />
+
+    <include file="$(find scout_base)/launch/scout_base.launch">
+        <arg name="simulated_robot" default="$(arg simulated_robot)" />
+        <arg name="odom_topic_name" default="$(arg odom_topic_name)" />
+        <arg name="is_scout_omni" default="$(arg is_scout_omni)" />
+        <arg name="pub_tf" default="$(arg pub_tf)" />
+    </include>
+
+    <include file="$(find scout_description)/launch/gazebo.launch">
+    </include>
+
+    <include file="$(find scout_description)/launch/display_scout_mini.launch">
+        
+    </include>
+
+    
+
+</launch>

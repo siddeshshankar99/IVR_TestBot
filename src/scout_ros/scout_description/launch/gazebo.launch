@@ -1,0 +1,45 @@
+<launch>
+  <!-- Arguments for the launch file -->
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  
+  <!-- Load the robot model into the robot_description parameter -->
+  <param name="robot_description" 
+         textfile="$(find scout_description)/urdf/scout_mini.urdf"/>
+         
+  <!-- Include the empty world launch file with custom world argument -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find scout_description)/worlds/CoboDeck/Cobo.world"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <arg name="debug" value="$(arg debug)"/>
+  </include>
+  
+  <!-- Static transform between base_link and base_footprint -->
+  <node
+    name="tf_footprint_base"
+    pkg="tf"
+    type="static_transform_publisher"
+    args="0 0 0 0 0 0 base_link base_footprint 40" />
+  
+  <!-- Spawn the robot model in Gazebo -->
+  <node
+    name="spawn_model"
+    pkg="gazebo_ros"
+    type="spawn_model"
+    args="-file $(find scout_description)/urdf/scout_mini.urdf -urdf -model scout_description"
+    output="screen" />
+    
+  <!-- Fake joint calibration -->
+  <node
+    name="fake_joint_calibration"
+    pkg="rostopic"
+    type="rostopic"
+    args="pub /calibrated std_msgs/Bool true" />
+</launch>
+
